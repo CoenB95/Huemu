@@ -1,4 +1,5 @@
 import com.google.gson.Gson;
+import com.sun.net.httpserver.HttpServer;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -144,6 +146,17 @@ public class Main extends Application {
 				e.printStackTrace();
 			}
 		});
+
+		try {
+			HttpServer server = HttpServer.create(new InetSocketAddress("localhost",7300), 0);
+			server.createContext("/", exchange -> {
+				System.out.println("Http request: " + exchange.getRequestMethod());
+			});
+			server.start();
+			System.out.println("Server at " + server.getAddress());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		pane.widthProperty().addListener((v1, v2, v3) -> drawLines());
 		pane.heightProperty().addListener((v1, v2, v3) -> drawLines());
