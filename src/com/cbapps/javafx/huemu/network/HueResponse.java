@@ -23,7 +23,7 @@ public class HueResponse extends ResponseBehavior {
 		Gson gson = new Gson();
 		Map<String, HueLight> mapping = new HashMap<>();
 		lights.forEach(l -> mapping.put(l.getId(), l));
-		send(gson.toJson(mapping));
+		send(gson.toJsonTree(mapping));
 	}
 
 	@Override

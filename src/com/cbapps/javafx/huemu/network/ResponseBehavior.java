@@ -2,6 +2,8 @@ package com.cbapps.javafx.huemu.network;
 
 import com.cbapps.javafx.huemu.data.HueLight;
 import com.cbapps.javafx.huemu.data.HueLightState;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 
 import javax.json.Json;
@@ -10,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Coen Boelhouwers
@@ -17,12 +21,14 @@ import java.util.Collection;
 public abstract class ResponseBehavior {
 	private HttpExchange exchange;
 
-	protected void send(String json) {
-		System.out.println("Sending response:\n" + json + '\n');
+	protected void send(Object json) {
 		try {
 			exchange.sendResponseHeaders(200, 0);
 			try (OutputStreamWriter writer = new OutputStreamWriter(exchange.getResponseBody())) {
-				writer.write(json);
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				String msg = gson.toJson(json);
+				System.out.println("Sending response:\n" + msg + '\n');
+				writer.write(msg);
 				writer.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

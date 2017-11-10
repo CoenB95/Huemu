@@ -10,11 +10,11 @@ import javafx.scene.paint.Color;
 public class HueLightState {
 	private boolean on;
 	@SerializedName("bri")
-	private double brightness;
+	private int brightness;
 	@SerializedName("hue")
-	private double hue;
+	private int hue;
 	@SerializedName("sat")
-	private double saturation;
+	private int saturation;
 
 	private HueLightEffect effect = HueLightEffect.NONE;
 
@@ -29,7 +29,7 @@ public class HueLightState {
 	@SerializedName("colormode")
 	private HueLightColorMode colorMode = HueLightColorMode.NONE;
 
-	private double animSec;
+	private transient double animSec;
 
 	public Color getColor() {
 		if (colorMode == null)
@@ -40,7 +40,7 @@ public class HueLightState {
 		switch (colorMode) {
 			case HSB:
 				double h = effect == HueLightEffect.COLOR_LOOP ? (hue + animSec * 3435) % 65_535 : hue;
-				return Color.hsb(h / 65_535 * 360, brightness / 255, saturation / 255);
+				return Color.hsb(h / 65_535 * 360, (double) brightness / 255, (double) saturation / 255);
 			default:
 				return Color.BLACK;
 		}
