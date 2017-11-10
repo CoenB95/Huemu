@@ -14,26 +14,25 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author Coen Boelhouwers
  */
-public class HueLightPane extends Circle {
+public class HueBulb extends Circle {
 
 	public HueLight light;
 	private TargetedAccelerator x;
 	private TargetedAccelerator y;
-	private double centerX;
-	private double centerY;
 	private double mouseX;
 	private double mouseY;
 
-	public HueLightPane() {
-		super(50, Color.BLUE);
+	public HueBulb(RoomPane parent) {
+		super(40, Color.BLUE);
+
 		x = new TargetedAccelerator(0, 2000, 1000);
 		y = new TargetedAccelerator(0, 2000, 1000);
 
-		layoutXProperty().addListener((a,b,c) -> {
+		layoutXProperty().addListener((a, b, c) -> {
 			//x.resetValue(getTranslateX() + b.doubleValue() - c.doubleValue());
 			update(0);
 		});
-		layoutYProperty().addListener((a,b,c) -> {
+		layoutYProperty().addListener((a, b, c) -> {
 			//y.resetValue(getTranslateY() + b.doubleValue() - c.doubleValue());
 			update(0);
 		});
@@ -45,6 +44,8 @@ public class HueLightPane extends Circle {
 		});
 
 		setOnMouseDragged(event -> {
+			parent.showGrid(true);
+
 			double diffX = event.getSceneX() - mouseX;
 			double diffY = event.getSceneY() - mouseY;
 			if (diffX >= 50) {
@@ -61,46 +62,46 @@ public class HueLightPane extends Circle {
 				setLayoutY(getLayoutY() - 50);
 				mouseY = event.getSceneY();
 			}
-
-//			if (Math.abs(event.getSceneY() - mouseY) > 50) {
-//				setLayoutY(getLayoutY() + Math.signum());
-//				centerY = getLayoutY();
-//				mouseY = event.getSceneY();
-//			}
 		});
 
-		setOnMouseClicked(event -> {
-			CompletableFuture.runAsync(() -> {
-				try {
-					URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
-							light.getId() + "/state");
-					HttpURLConnection con = (HttpURLConnection) url.openConnection();
-					con.setRequestMethod("PUT");
-					con.setDoOutput(true);
-					try (OutputStream out = con.getOutputStream()) {
-						JsonWriter writer = Json.createWriter(out);
-						writer.writeObject(Json.createObjectBuilder()
-								.add("on", !light.getState().isOn())
-								.build());
-						System.out.println("Send!");
-					}
-					try (InputStream input = con.getInputStream()) {
-						JsonReader reader = Json.createReader(input);
-						JsonArray array = reader.readArray();
-						for (JsonObject o : array.getValuesAs(JsonObject.class)) {
-							JsonObject ack;
-							if ((ack = o.getJsonObject("success")) != null) {
-								System.out.println("Success!");
-								light.getState().setOn(ack.getBoolean("/lights/" + light.getId() + "/state/on"));
-							}
-						}
-						System.out.println("response: " + array);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		setOnMouseReleased(event -> {
+			if (!event.isStillSincePress())
+				parent.showGrid(false);
+		});
+
+		setOnMouseClicked(event -> CompletableFuture.runAsync(() -> {
+			if (!event.isStillSincePress())
+				return;
+
+			try {
+				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
+						light.getId() + "/state");
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("PUT");
+				con.setDoOutput(true);
+				try (OutputStream out = con.getOutputStream()) {
+					JsonWriter writer = Json.createWriter(out);
+					writer.writeObject(Json.createObjectBuilder()
+							.add("on", !light.getState().isOn())
+							.build());
+					System.out.println("Send!");
 				}
-			});
-		});
+				try (InputStream input = con.getInputStream()) {
+					JsonReader reader = Json.createReader(input);
+					JsonArray array = reader.readArray();
+					for (JsonObject o : array.getValuesAs(JsonObject.class)) {
+						JsonObject ack;
+						if ((ack = o.getJsonObject("success")) != null) {
+							System.out.println("Success!");
+							light.getState().setOn(ack.getBoolean("/lights/" + light.getId() + "/state/on"));
+						}
+					}
+					System.out.println("response: " + array);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}));
 	}
 
 	public TargetedAccelerator getTargetX() {
