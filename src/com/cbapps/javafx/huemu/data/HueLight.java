@@ -1,3 +1,5 @@
+package com.cbapps.javafx.huemu.data;
+
 import javax.json.bind.annotation.JsonbProperty;
 
 /**

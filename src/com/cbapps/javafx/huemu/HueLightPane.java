@@ -1,15 +1,14 @@
+package com.cbapps.javafx.huemu;
+
+import com.cbapps.javafx.huemu.data.HueLight;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import javax.json.*;
-import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 /**

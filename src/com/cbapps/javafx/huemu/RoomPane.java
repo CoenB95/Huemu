@@ -1,3 +1,5 @@
+package com.cbapps.javafx.huemu;
+
 import javafx.scene.layout.Pane;
 
 /**

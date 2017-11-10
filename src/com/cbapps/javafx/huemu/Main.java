@@ -1,30 +1,25 @@
+package com.cbapps.javafx.huemu;
+
+import com.cbapps.javafx.huemu.data.HueLight;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
-import org.glassfish.json.JsonUtil;
 
 import javax.json.Json;
 import javax.json.JsonReader;
-import javax.json.JsonStructure;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.config.PropertyVisibilityStrategy;
-import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -128,7 +123,7 @@ public class Main extends Application {
 							lastHue = newHue;
 							lastSec = newSec;
 							for (int i = 0; i < lights.size() && i < bulbs.size(); i++) {
-								//HueLightState state = lights.get(i).getState();
+								//com.cbapps.javafx.huemu.data.HueLightState state = lights.get(i).getState();
 								//bulbs.get(i).setFill(state.getColor());
 								if (bulbs.get(i).light == null || bulbs.get(i).light.getState().getHue() !=
 										lights.get(i).getState().getHue()) {

@@ -1,8 +1,7 @@
+package com.cbapps.javafx.huemu.data;
+
 import com.google.gson.annotations.SerializedName;
 import javafx.scene.paint.Color;
-
-import javax.json.bind.annotation.JsonbProperty;
-import javax.json.bind.annotation.JsonbTransient;
 
 /**
  * @author CoenB95

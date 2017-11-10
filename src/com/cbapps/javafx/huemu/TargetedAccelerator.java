@@ -1,3 +1,5 @@
+package com.cbapps.javafx.huemu;
+
 /**
  * @author Coen Boelhouwers
  * @version 1.0
