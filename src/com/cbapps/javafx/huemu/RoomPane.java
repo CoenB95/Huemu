@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class RoomPane extends Pane {
 
+	public static final int GRID_SIZE = 25;
+
 	private List<HueBulb> bulbs;
 	private boolean gridVisible;
 	private List<Line> lines;
@@ -23,8 +25,8 @@ public class RoomPane extends Pane {
 
 		for (int i = 0; i < 10; i++) {
 			HueBulb bulb = new HueBulb(this);
-			bulb.setLayoutX(i * 100);
-			bulb.setLayoutY(50);
+			bulb.setLayoutX(i * GRID_SIZE);
+			bulb.setLayoutY(GRID_SIZE);
 			addBulb(bulb);
 		}
 
@@ -54,13 +56,13 @@ public class RoomPane extends Pane {
 				Line line = new Line(x, 0, x, getHeight());
 				line.setStroke(Color.WHITE);
 				lines.add(line);
-				x += 50;
+				x += GRID_SIZE;
 			}
 			while (y < getHeight()) {
 				Line line = new Line(0, y, getWidth(), y);
 				line.setStroke(Color.WHITE);
 				lines.add(line);
-				y += 50;
+				y += GRID_SIZE;
 			}
 			getChildren().addAll(0, lines);
 		});

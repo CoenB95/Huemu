@@ -48,19 +48,25 @@ public class HueBulb extends Circle {
 
 			double diffX = event.getSceneX() - mouseX;
 			double diffY = event.getSceneY() - mouseY;
-			if (diffX >= 50) {
-				setLayoutX(getLayoutX() + 50);
-				mouseX = event.getSceneX();
-			} else if (diffX <= -50) {
-				setLayoutX(getLayoutX() - 50);
-				mouseX = event.getSceneX();
+			while (diffX > RoomPane.GRID_SIZE) {
+				setLayoutX(getLayoutX() + RoomPane.GRID_SIZE);
+				mouseX += RoomPane.GRID_SIZE;
+				diffX -= RoomPane.GRID_SIZE;
 			}
-			if (diffY >= 50) {
-				setLayoutY(getLayoutY() + 50);
-				mouseY = event.getSceneY();
-			} else if (diffY <= -50) {
-				setLayoutY(getLayoutY() - 50);
-				mouseY = event.getSceneY();
+			while (diffX < -RoomPane.GRID_SIZE) {
+				setLayoutX(getLayoutX() - RoomPane.GRID_SIZE);
+				mouseX -= RoomPane.GRID_SIZE;
+				diffX += RoomPane.GRID_SIZE;
+			}
+			while (diffY > RoomPane.GRID_SIZE) {
+				setLayoutY(getLayoutY() + RoomPane.GRID_SIZE);
+				mouseY += RoomPane.GRID_SIZE;
+				diffY -= RoomPane.GRID_SIZE;
+			}
+			while (diffY < -RoomPane.GRID_SIZE) {
+				setLayoutY(getLayoutY() - RoomPane.GRID_SIZE);
+				mouseY -= RoomPane.GRID_SIZE;
+				diffY += RoomPane.GRID_SIZE;
 			}
 		});
 
