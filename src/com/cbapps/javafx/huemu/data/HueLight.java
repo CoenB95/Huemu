@@ -22,6 +22,10 @@ public class HueLight {
 		this.id = id;
 	}
 
+	public void setState(HueLightState state) {
+		this.state = state;
+	}
+
 	public void update(double elapsedSeconds) {
 		state.update(elapsedSeconds);
 	}

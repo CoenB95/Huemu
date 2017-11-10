@@ -1,6 +1,7 @@
 package com.cbapps.javafx.huemu;
 
 import com.cbapps.javafx.huemu.data.HueLight;
+import com.cbapps.javafx.huemu.network.HueHttpHandler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
 import javafx.animation.AnimationTimer;
@@ -62,7 +63,7 @@ public class Main extends Application {
 		CompletableFuture.runAsync(() -> {
 			try {
 				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights");
-				while (!stopped) {
+				//while (!stopped) {
 					try (JsonReader reader = Json.createReader(url.openStream())) {
 						List<HueLight> lights = new ArrayList<>();
 						Gson gson = new Gson();
@@ -71,6 +72,10 @@ public class Main extends Application {
 							hueLight.setId(k);
 							lights.add(hueLight);
 						});
+
+						if (server == null)
+							startServer(lights);
+
 						Platform.runLater(() -> {
 							for (int i = 0; i < lights.size() && i < bulbGrid.getBulbs().size(); i++) {
 								HueLight bulbLight = bulbGrid.getBulbs().get(i).light;
@@ -85,16 +90,24 @@ public class Main extends Application {
 						e.printStackTrace();
 					}
 					Thread.sleep(2000);
-				}
+				//}
 			} catch (MalformedURLException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		});
+	}
 
+	private void startServer(List<HueLight> lights) {
 		try {
 			server = HttpServer.create(new InetSocketAddress("localhost",7300), 0);
-			server.createContext("/", exchange ->
-				System.out.println("Http request: " + exchange.getRequestMethod()));
+			HueHttpHandler handler = new HueHttpHandler();
+			for (HueLight light : lights) {
+				server.createContext("/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights",
+						exchange -> handler.handleLights(lights, exchange));
+				String address = "/lights/" + light.getId() + "/state";
+				server.createContext("/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9" + address,
+						exchange -> handler.handleState(address, light, exchange));
+			}
 			server.start();
 			System.out.println("Server at " + server.getAddress());
 		} catch (IOException e) {
