@@ -33,6 +33,7 @@ public class Main extends Application {
 	private boolean stopped;
 	private RoomPane bulbGrid;
 	private HttpServer server;
+	private LightStorage storage;
 
 	public static void main(String[] args) {
 		Application.launch();
@@ -40,13 +41,15 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		bulbGrid = new RoomPane();
+		storage = new LightStorage();
+		storage.restoreLights();
+		bulbGrid = new RoomPane(storage.getLights());
 		BorderPane pane = new BorderPane(bulbGrid);
 
 		pane.setTop(new Label("Hallo wereld!"));
 		pane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, null, null)));
 
-		Scene scene = new Scene(pane, 300, 300);
+		Scene scene = new Scene(pane, 400, 400);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -119,6 +122,11 @@ public class Main extends Application {
 	public void stop() throws Exception {
 		super.stop();
 		stopped = true;
+		storage.getLights().clear();
+		bulbGrid.getBulbs().forEach(b -> storage.getLights().add(
+				new LightStorage.HueBulbInfo(b.light, b.getLayoutX(), b.getLayoutY())
+		));
+		storage.storeLights();
 		if (server != null)
 			server.stop(0);
 	}

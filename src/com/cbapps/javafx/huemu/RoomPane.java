@@ -1,12 +1,16 @@
 package com.cbapps.javafx.huemu;
 
+import com.cbapps.javafx.huemu.data.HueLight;
+import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * @author Coen Boelhouwers
@@ -19,14 +23,15 @@ public class RoomPane extends Pane {
 	private boolean gridVisible;
 	private List<Line> lines;
 
-	public RoomPane() {
+	public RoomPane(List<LightStorage.HueBulbInfo> infos) {
 		bulbs = new ArrayList<>();
 		lines = new ArrayList<>();
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < infos.size(); i++) {
 			HueBulb bulb = new HueBulb(this);
-			bulb.setLayoutX(i * GRID_SIZE);
-			bulb.setLayoutY(GRID_SIZE);
+			bulb.setLayoutX(infos.get(i).getX());
+			bulb.setLayoutY(infos.get(i).getY());
+			bulb.light = infos.get(i).getLight();
 			addBulb(bulb);
 		}
 

@@ -110,12 +110,12 @@ public class HueBulb extends Circle {
 		}));
 	}
 
-	public TargetedAccelerator getTargetX() {
-		return x;
+	public double getTargetX() {
+		return x.getTarget();
 	}
 
-	public TargetedAccelerator getTargetY() {
-		return y;
+	public double getTargetY() {
+		return y.getTarget();
 	}
 
 	void update(double elapsedSeconds) {
