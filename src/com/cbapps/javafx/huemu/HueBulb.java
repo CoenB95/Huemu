@@ -1,8 +1,11 @@
 package com.cbapps.javafx.huemu;
 
 import com.cbapps.javafx.huemu.data.HueLight;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import javax.json.*;
 import java.io.InputStream;
@@ -14,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * @author Coen Boelhouwers
  */
-public class HueBulb extends Circle {
+public class HueBulb extends StackPane {
 
 	public HueLight light;
 	private TargetedAccelerator x;
@@ -22,8 +25,15 @@ public class HueBulb extends Circle {
 	private double mouseX;
 	private double mouseY;
 
+	private Circle circle;
+	private Text text;
+
 	public HueBulb(RoomPane parent) {
-		super(40, Color.BLUE);
+		circle = new Circle(40, Color.BLUE);
+
+		text = new Text("-");
+		text.setFont(Font.font("Segoe UI", 50));
+		text.setFill(Color.WHITE);
 
 		x = new TargetedAccelerator(0, 2000, 1000);
 		y = new TargetedAccelerator(0, 2000, 1000);
@@ -108,6 +118,7 @@ public class HueBulb extends Circle {
 				e.printStackTrace();
 			}
 		}));
+		getChildren().addAll(circle, text);
 	}
 
 	public double getTargetX() {
@@ -125,7 +136,8 @@ public class HueBulb extends Circle {
 		setTranslateY(y.getValue());
 		if (light != null) {
 			light.update(elapsedSeconds);
-			setFill(light.getState().getColor());
+			circle.setFill(light.getState().getColor());
+			text.setText(light.getId());
 		}
 		//System.out.println("x=" + x.getValue() + ", y=" + y.getValue());
 	}

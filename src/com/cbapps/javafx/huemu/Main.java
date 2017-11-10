@@ -82,11 +82,11 @@ public class Main extends Application {
 						Platform.runLater(() -> {
 							for (int i = 0; i < lights.size() && i < bulbGrid.getBulbs().size(); i++) {
 								HueLight bulbLight = bulbGrid.getBulbs().get(i).light;
-								if (bulbLight == null || bulbLight.getState().getHue() !=
-										lights.get(i).getState().getHue()) {
-									System.out.println("Bulb " + i + " needs update.");
+								//if (bulbLight == null || bulbLight.getState().getHue() !=
+								//		lights.get(i).getState().getHue()) {
+									//System.out.println("Bulb " + i + " needs update.");
 									bulbGrid.getBulbs().get(i).light = lights.get(i);
-								}
+								//}
 							}
 						});
 					} catch (Exception e) {
