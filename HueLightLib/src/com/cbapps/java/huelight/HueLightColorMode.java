@@ -1,4 +1,4 @@
-package com.cbapps.javafx.huemu.data;
+package com.cbapps.java.huelight;
 
 import com.google.gson.annotations.SerializedName;
 

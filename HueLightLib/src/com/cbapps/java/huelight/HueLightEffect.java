@@ -1,4 +1,4 @@
-package com.cbapps.javafx.huemu.data;
+package com.cbapps.java.huelight;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
  * @author CoenB95
  */
 
-public enum HueLightAlert {
+public enum HueLightEffect {
 	@SerializedName("none")
 	NONE,
 
-	@SerializedName("select")
-	SELECT
+	@SerializedName("colorloop")
+	COLOR_LOOP
 }
