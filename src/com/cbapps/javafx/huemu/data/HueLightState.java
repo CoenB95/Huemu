@@ -38,9 +38,10 @@ public class HueLightState {
 			return Color.BLACK;
 
 		switch (colorMode) {
+			case XY:
 			case HSB:
 				double h = effect == HueLightEffect.COLOR_LOOP ? (hue + animSec * 3435) % 65_535 : hue;
-				return Color.hsb(h / 65_535 * 360, (double) brightness / 255, (double) saturation / 255);
+				return Color.hsb(h / 65_535 * 360, (double) saturation / 255, (double) brightness / 255);
 			default:
 				return Color.BLACK;
 		}

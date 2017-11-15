@@ -66,7 +66,7 @@ public class Main extends Application {
 		CompletableFuture.runAsync(() -> {
 			try {
 				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights");
-				//while (!stopped) {
+				while (!stopped) {
 					try (JsonReader reader = Json.createReader(url.openStream())) {
 						List<HueLight> lights = new ArrayList<>();
 						Gson gson = new Gson();
@@ -93,7 +93,7 @@ public class Main extends Application {
 						e.printStackTrace();
 					}
 					Thread.sleep(2000);
-				//}
+				}
 			} catch (MalformedURLException | InterruptedException e) {
 				e.printStackTrace();
 			}
