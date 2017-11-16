@@ -1,14 +1,11 @@
 package com.cbapps.javafx.huemu.network;
 
-import com.cbapps.javafx.huemu.data.HueLight;
-import com.cbapps.javafx.huemu.data.HueLightState;
+import com.cbapps.java.huelight.HueLight;
+import com.cbapps.java.huelight.HueLightState;
 import com.google.gson.Gson;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

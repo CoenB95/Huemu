@@ -1,18 +1,13 @@
 package com.cbapps.javafx.huemu.network;
 
-import com.cbapps.javafx.huemu.data.HueLight;
-import com.cbapps.javafx.huemu.data.HueLightState;
+import com.cbapps.java.huelight.HueLight;
+import com.cbapps.java.huelight.HueLightState;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.sun.net.httpserver.HttpExchange;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import java.io.*;
+import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Coen Boelhouwers

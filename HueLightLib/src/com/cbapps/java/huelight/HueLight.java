@@ -8,16 +8,20 @@ public class HueLight {
 	private String id;
 	private HueLightState state;
 
+	protected HueLight() {
+
+	}
+
+	public HueLight(HueLightState state) {
+		this.state = state;
+	}
+
 	public String getId() {
 		return id;
 	}
 
 	public HueLightState getState() {
 		return state;
-	}
-
-	public static HueLight newInstance() {
-		return HueLightFactory.newHueLightInstance();
 	}
 
 	public void setId(String id) {

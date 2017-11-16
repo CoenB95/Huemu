@@ -1,8 +1,11 @@
 package com.cbapps.javafx.huemu;
 
-import com.cbapps.javafx.huemu.data.HueLight;
+import com.cbapps.java.huelight.HueLight;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -109,7 +112,7 @@ public class HueBulb extends StackPane {
 						JsonObject ack;
 						if ((ack = o.getJsonObject("success")) != null) {
 							System.out.println("Success!");
-							light.getState().setOn(ack.getBoolean("/lights/" + light.getId() + "/state/on"));
+							light.setState(light.getState().toggled(ack.getBoolean("/lights/" + light.getId() + "/state/on")));
 						}
 					}
 					System.out.println("response: " + array);
@@ -135,10 +138,25 @@ public class HueBulb extends StackPane {
 		setTranslateX(x.getValue());
 		setTranslateY(y.getValue());
 		if (light != null) {
-			light.update(elapsedSeconds);
-			circle.setFill(light.getState().getColor());
+			switch (light.getState().getEffect()) {
+				case COLOR_LOOP:
+					circle.setFill(new RadialGradient(0, 0,
+							0, 0.5, 1, true, CycleMethod.NO_CYCLE,
+							new Stop(0.125, Color.RED),
+							new Stop(0.250, Color.ORANGE),
+							new Stop(0.375, Color.YELLOW),
+							new Stop(0.500, Color.GREEN),
+							new Stop(0.625, Color.BLUE),
+							new Stop(0.750, Color.INDIGO),
+							new Stop(0.875, Color.VIOLET),
+							new Stop(1.000, Color.RED)
+					));
+					break;
+				case NONE:
+				default:
+					circle.setFill(HueLightUtil.getColor(light));
+			}
 			text.setText(light.getId());
 		}
-		//System.out.println("x=" + x.getValue() + ", y=" + y.getValue());
 	}
 }

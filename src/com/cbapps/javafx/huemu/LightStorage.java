@@ -1,7 +1,6 @@
 package com.cbapps.javafx.huemu;
-
-import com.cbapps.javafx.huemu.data.HueLight;
-import com.cbapps.javafx.huemu.data.HueLightState;
+import com.cbapps.java.huelight.HueLight;
+import com.cbapps.java.huelight.HueLightState;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -12,7 +11,7 @@ import java.util.prefs.Preferences;
  * @author Coen Boelhouwers
  */
 public class LightStorage {
-	private static final long VERSION = 2;
+	private static final long VERSION = 3;
 	private List<HueBulbInfo> lights;
 	private long version = VERSION;
 
@@ -28,8 +27,7 @@ public class LightStorage {
 			System.out.println("Old storage version, can't restore bulb positions.");
 			lights = new ArrayList<>();
 			for (int i = 0; i < 9; i++) {
-				HueLight hl = new HueLight();
-				hl.setState(new HueLightState());
+				HueLight hl = new HueLight(HueLightState.off());
 				lights.add(new HueBulbInfo(hl,i * RoomPane.GRID_SIZE, RoomPane.GRID_SIZE));
 			}
 			return;

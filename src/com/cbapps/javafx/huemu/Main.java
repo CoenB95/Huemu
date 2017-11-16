@@ -1,6 +1,6 @@
 package com.cbapps.javafx.huemu;
 
-import com.cbapps.javafx.huemu.data.HueLight;
+import com.cbapps.java.huelight.HueLight;
 import com.cbapps.javafx.huemu.network.HueHttpHandler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
@@ -64,6 +64,11 @@ public class Main extends Application {
 		}.start();
 
 		CompletableFuture.runAsync(() -> {
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			try {
 				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights");
 				while (!stopped) {

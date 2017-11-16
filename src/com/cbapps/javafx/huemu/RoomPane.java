@@ -1,16 +1,12 @@
 package com.cbapps.javafx.huemu;
 
-import com.cbapps.javafx.huemu.data.HueLight;
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * @author Coen Boelhouwers
