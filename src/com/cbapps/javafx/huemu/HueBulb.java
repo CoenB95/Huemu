@@ -1,11 +1,11 @@
 package com.cbapps.javafx.huemu;
 
 import com.cbapps.java.huelight.HueLight;
+import com.cbapps.java.huelight.HueLightState;
+import javafx.geometry.Point2D;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -27,15 +27,18 @@ public class HueBulb extends StackPane {
 	private TargetedAccelerator y;
 	private double mouseX;
 	private double mouseY;
+	private Color newColor;
 
 	private Circle circle;
 	private Text text;
 
 	public HueBulb(RoomPane parent) {
 		circle = new Circle(40, Color.BLUE);
+		circle.setStrokeWidth(8);
+		circle.setStroke(Color.TRANSPARENT);
 
 		text = new Text("-");
-		text.setFont(Font.font("Segoe UI", 50));
+		text.setFont(Font.font("Segoe UI", 30));
 		text.setFill(Color.WHITE);
 
 		x = new TargetedAccelerator(0, 2000, 1000);
@@ -50,6 +53,10 @@ public class HueBulb extends StackPane {
 			update(0);
 		});
 
+		circle.hoverProperty().addListener((v1, v2, v3) -> {
+			if (!v3)
+				circle.setStroke(Color.TRANSPARENT);
+		});
 
 		setOnMousePressed(event -> {
 			mouseX = event.getSceneX();
@@ -83,6 +90,15 @@ public class HueBulb extends StackPane {
 			}
 		});
 
+		setOnMouseMoved(event -> {
+			double x = event.getX();
+			double y = event.getY();
+			double angle = Math.atan2(y - getHeight() / 2, x - getWidth() / 2) / (Math.PI * 2) * 360;
+			double distance = new Point2D(getWidth() / 2, getHeight() / 2).distance(x, y) / circle.getRadius();
+			newColor = Color.hsb(angle, 1, distance < 1.0 ? distance : 1.0);
+			if (circle.isHover() || text.isHover()) circle.setStroke(newColor);
+		});
+
 		setOnMouseReleased(event -> {
 			if (!event.isStillSincePress())
 				parent.showGrid(false);
@@ -100,9 +116,18 @@ public class HueBulb extends StackPane {
 				con.setDoOutput(true);
 				try (OutputStream out = con.getOutputStream()) {
 					JsonWriter writer = Json.createWriter(out);
-					writer.writeObject(Json.createObjectBuilder()
-							.add("on", !light.getState().isOn())
-							.build());
+					if (event.getButton() == MouseButton.SECONDARY) {
+						writer.writeObject(Json.createObjectBuilder()
+								.add("on", !light.getState().isOn())
+								.build());
+					} else if (event.getButton() == MouseButton.PRIMARY) {
+						HueLightState newColorState = HueLightUtil.withColor(light.getState(), newColor);
+						writer.writeObject(Json.createObjectBuilder()
+								.add("hue", newColorState.getHue())
+								.add("sat", newColorState.getSaturation())
+								.add("bri", newColorState.getBrightness())
+								.build());
+					}
 					System.out.println("Send!");
 				}
 				try (InputStream input = con.getInputStream()) {
@@ -112,7 +137,17 @@ public class HueBulb extends StackPane {
 						JsonObject ack;
 						if ((ack = o.getJsonObject("success")) != null) {
 							System.out.println("Success!");
-							light.setState(light.getState().toggled(ack.getBoolean("/lights/" + light.getId() + "/state/on")));
+							String base = "/lights/" + light.getId() + "/state/";
+							HueLightState state = light.getState();
+							if (ack.containsKey(base + "on"))
+								state.toggled(ack.getBoolean( base + "on"));
+							else if (ack.containsKey(base + "bri"))
+								state.withHue(ack.getJsonNumber(base + "bri").intValue());
+							else if (ack.containsKey(base + "hue"))
+								state.withHue(ack.getJsonNumber(base + "hue").intValue());
+							else if (ack.containsKey(base + "sat"))
+								state.withHue(ack.getJsonNumber(base + "sat").intValue());
+							light.setState(state);
 						}
 					}
 					System.out.println("response: " + array);
@@ -140,16 +175,16 @@ public class HueBulb extends StackPane {
 		if (light != null) {
 			switch (light.getState().getEffect()) {
 				case COLOR_LOOP:
-					circle.setFill(new RadialGradient(0, 0,
-							0, 0.5, 1, true, CycleMethod.NO_CYCLE,
-							new Stop(0.125, Color.RED),
-							new Stop(0.250, Color.ORANGE),
-							new Stop(0.375, Color.YELLOW),
-							new Stop(0.500, Color.GREEN),
-							new Stop(0.625, Color.BLUE),
-							new Stop(0.750, Color.INDIGO),
-							new Stop(0.875, Color.VIOLET),
-							new Stop(1.000, Color.RED)
+					circle.setFill(new LinearGradient(0.2, 0.8,
+							0.8, 0.2, true, CycleMethod.NO_CYCLE,
+							new Stop(0, Color.web("#f8bd55")),
+							new Stop(0.14, Color.web("#c0fe56")),
+							new Stop(0.28, Color.web("#5dfbc1")),
+							new Stop(0.43, Color.web("#64c2f8")),
+							new Stop(0.57, Color.web("#be4af7")),
+							new Stop(0.71, Color.web("#ed5fc2")),
+							new Stop(0.85, Color.web("#ef504c")),
+							new Stop(1, Color.web("#f2660f"))
 					));
 					break;
 				case NONE:

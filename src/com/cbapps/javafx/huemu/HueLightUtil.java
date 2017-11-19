@@ -29,4 +29,10 @@ public class HueLightUtil {
 				return Color.BLACK;
 		}
 	}
+
+	public static HueLightState withColor(HueLightState state, Color color) {
+		return state.withHue((int) (color.getHue() / 360 * 65_535))
+				.withSaturation((int) (color.getSaturation() * 255))
+				.withBrightness((int) (color.getBrightness() * 255));
+	}
 }

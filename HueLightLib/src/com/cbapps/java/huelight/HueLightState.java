@@ -98,4 +98,22 @@ public class HueLightState {
 		s.on = value;
 		return s;
 	}
+
+	public HueLightState withBrightness(int value) {
+		HueLightState s = copy();
+		s.brightness = value;
+		return s;
+	}
+
+	public HueLightState withHue(int value) {
+		HueLightState s = copy();
+		s.hue = value;
+		return s;
+	}
+
+	public HueLightState withSaturation(int value) {
+		HueLightState s = copy();
+		s.saturation = value;
+		return s;
+	}
 }
