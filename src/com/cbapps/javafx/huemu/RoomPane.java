@@ -1,6 +1,8 @@
 package com.cbapps.javafx.huemu;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -22,6 +24,7 @@ public class RoomPane extends Pane {
 	private boolean gridVisible;
 	private List<Line> lines;
 	private Slider slider;
+	private DoubleProperty scaleProperty = new SimpleDoubleProperty(1);
 
 	public RoomPane(List<LightStorage.HueBulbInfo> infos) {
 		bulbs = new ArrayList<>();
@@ -75,6 +78,10 @@ public class RoomPane extends Pane {
 
 	public List<HueBulb> getBulbs() {
 		return bulbs;
+	}
+
+	public DoubleProperty scaleProperty() {
+		return scaleProperty;
 	}
 
 	public boolean isGridVisible() {

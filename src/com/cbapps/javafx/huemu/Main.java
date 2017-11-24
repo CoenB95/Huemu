@@ -31,8 +31,6 @@ import java.util.concurrent.CompletableFuture;
  */
 public class Main extends Application {
 
-	public static double CURRENT_SCALE = 1;
-
 	private boolean stopped;
 	private RoomPane bulbGrid;
 	private HttpServer server;
@@ -53,10 +51,14 @@ public class Main extends Application {
 
 		Slider slider = new Slider(50, 400, 100);
 		Scale scale = new Scale(1, 1, 0, 0);
+		bulbGrid.scaleProperty().bind(slider.valueProperty().divide(100));
 		scale.xProperty().bind(slider.valueProperty().divide(100));
 		scale.yProperty().bind(slider.valueProperty().divide(100));
-		slider.valueProperty().addListener((v1, v2, v3) -> CURRENT_SCALE = v3.doubleValue() / 100);
 		bulbGrid.getTransforms().add(scale);
+
+		bulbGrid.setOnZoom(event -> {
+			slider.setValue(bulbGrid.scaleProperty().get() * event.getZoomFactor() * 100);
+		});
 
 		TextField updateFrequencyField = new TextField(String.valueOf(updateFrequencyMillis));
 		updateFrequencyField.setPromptText("Update freq (ms)");
@@ -76,6 +78,7 @@ public class Main extends Application {
 				slider,
 				new Label("Update frequency"),
 				updateFrequencyField);
+		settingsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(5), null)));
 		pane.setRight(settingsBox);
 
 		pane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, null, null)));

@@ -70,26 +70,26 @@ public class HueBulb extends StackPane {
 		setOnMouseDragged(event -> {
 			parent.showGrid(true);
 
-			double scale = Main.CURRENT_SCALE;
+			double scale = parent.scaleProperty().get();
 			double diffX = event.getSceneX() - mouseX;
 			double diffY = event.getSceneY() - mouseY;
 
-			while (diffX > RoomPane.GRID_SIZE * scale) {
+			while (diffX > RoomPane.GRID_SIZE * scale && (getLayoutX() + getWidth()) * scale + RoomPane.GRID_SIZE < parent.getWidth()) {
 				setLayoutX(getLayoutX() + RoomPane.GRID_SIZE);
 				mouseX += RoomPane.GRID_SIZE * scale;
 				diffX -= RoomPane.GRID_SIZE * scale;
 			}
-			while (diffX < -RoomPane.GRID_SIZE * scale) {
+			while (diffX < -RoomPane.GRID_SIZE * scale && getLayoutX() * scale - RoomPane.GRID_SIZE > 0) {
 				setLayoutX(getLayoutX() - RoomPane.GRID_SIZE);
 				mouseX -= RoomPane.GRID_SIZE * scale;
 				diffX += RoomPane.GRID_SIZE * scale;
 			}
-			while (diffY > RoomPane.GRID_SIZE * scale) {
+			while (diffY > RoomPane.GRID_SIZE * scale && (getLayoutY() + getHeight()) * scale + RoomPane.GRID_SIZE < parent.getHeight()) {
 				setLayoutY(getLayoutY() + RoomPane.GRID_SIZE);
 				mouseY += RoomPane.GRID_SIZE * scale;
 				diffY -= RoomPane.GRID_SIZE * scale;
 			}
-			while (diffY < -RoomPane.GRID_SIZE * scale) {
+			while (diffY < -RoomPane.GRID_SIZE * scale && getLayoutY() * scale - RoomPane.GRID_SIZE > 0) {
 				setLayoutY(getLayoutY() - RoomPane.GRID_SIZE);
 				mouseY -= RoomPane.GRID_SIZE * scale;
 				diffY += RoomPane.GRID_SIZE * scale;
