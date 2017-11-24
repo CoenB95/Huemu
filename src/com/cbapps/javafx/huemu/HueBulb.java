@@ -51,11 +51,11 @@ public class HueBulb extends StackPane {
 		y = new TargetedAccelerator(0, 2000, 1000);
 
 		layoutXProperty().addListener((a, b, c) -> {
-			//x.resetValue(getTranslateX() + b.doubleValue() - c.doubleValue());
+			x.resetValue(getTranslateX() + b.doubleValue() - c.doubleValue());
 			update(0);
 		});
 		layoutYProperty().addListener((a, b, c) -> {
-			//y.resetValue(getTranslateY() + b.doubleValue() - c.doubleValue());
+			y.resetValue(getTranslateY() + b.doubleValue() - c.doubleValue());
 			update(0);
 		});
 
@@ -105,8 +105,7 @@ public class HueBulb extends StackPane {
 		});
 
 		setOnMouseReleased(event -> {
-			if (!event.isStillSincePress())
-				parent.showGrid(false);
+			parent.showGrid(false);
 		});
 
 		setOnMouseClicked(event -> CompletableFuture.runAsync(() -> {
