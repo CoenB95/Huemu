@@ -9,10 +9,11 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
 import javax.json.Json;
@@ -30,10 +31,13 @@ import java.util.concurrent.CompletableFuture;
  */
 public class Main extends Application {
 
+	public static double CURRENT_SCALE = 1;
+
 	private boolean stopped;
 	private RoomPane bulbGrid;
 	private HttpServer server;
 	private LightStorage storage;
+	private int updateFrequencyMillis = 2000;
 
 	public static void main(String[] args) {
 		Application.launch();
@@ -43,10 +47,37 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		storage = new LightStorage();
 		storage.restoreLights();
+
 		bulbGrid = new RoomPane(storage.getLights());
 		BorderPane pane = new BorderPane(bulbGrid);
 
-		pane.setTop(new Label("Hallo wereld!"));
+		Slider slider = new Slider(50, 400, 100);
+		Scale scale = new Scale(1, 1, 0, 0);
+		scale.xProperty().bind(slider.valueProperty().divide(100));
+		scale.yProperty().bind(slider.valueProperty().divide(100));
+		slider.valueProperty().addListener((v1, v2, v3) -> CURRENT_SCALE = v3.doubleValue() / 100);
+		bulbGrid.getTransforms().add(scale);
+
+		TextField updateFrequencyField = new TextField(String.valueOf(updateFrequencyMillis));
+		updateFrequencyField.setPromptText("Update freq (ms)");
+		updateFrequencyField.setOnAction(event -> {
+			int value = 2000;
+			try {
+				if (!updateFrequencyField.getText().isEmpty())
+					value = Integer.parseInt(updateFrequencyField.getText());
+			} catch (NumberFormatException e) {
+				System.err.println("Not a valid value.");
+			}
+			updateFrequencyMillis = value;
+		});
+
+		VBox settingsBox = new VBox(
+				new Label("Scale"),
+				slider,
+				new Label("Update frequency"),
+				updateFrequencyField);
+		pane.setRight(settingsBox);
+
 		pane.setBackground(new Background(new BackgroundFill(Color.DARKGRAY, null, null)));
 
 		Scene scene = new Scene(pane, 400, 400);
@@ -64,11 +95,6 @@ public class Main extends Application {
 		}.start();
 
 		CompletableFuture.runAsync(() -> {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			try {
 				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights");
 				while (!stopped) {
@@ -97,7 +123,7 @@ public class Main extends Application {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					Thread.sleep(2000);
+					Thread.sleep(updateFrequencyMillis);
 				}
 			} catch (MalformedURLException | InterruptedException e) {
 				e.printStackTrace();

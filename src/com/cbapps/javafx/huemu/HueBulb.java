@@ -22,6 +22,8 @@ import java.util.concurrent.CompletableFuture;
  */
 public class HueBulb extends StackPane {
 
+	public static final double DEFAULT_RADIUS = 40;
+
 	public HueLight light;
 	private TargetedAccelerator x;
 	private TargetedAccelerator y;
@@ -33,7 +35,7 @@ public class HueBulb extends StackPane {
 	private Text text;
 
 	public HueBulb(RoomPane parent) {
-		circle = new Circle(40, Color.BLUE);
+		circle = new Circle(DEFAULT_RADIUS, Color.BLUE);
 		circle.setStrokeWidth(8);
 		circle.setStroke(Color.TRANSPARENT);
 
@@ -66,27 +68,29 @@ public class HueBulb extends StackPane {
 		setOnMouseDragged(event -> {
 			parent.showGrid(true);
 
+			double scale = Main.CURRENT_SCALE;
 			double diffX = event.getSceneX() - mouseX;
 			double diffY = event.getSceneY() - mouseY;
-			while (diffX > RoomPane.GRID_SIZE) {
+
+			while (diffX > RoomPane.GRID_SIZE * scale) {
 				setLayoutX(getLayoutX() + RoomPane.GRID_SIZE);
-				mouseX += RoomPane.GRID_SIZE;
-				diffX -= RoomPane.GRID_SIZE;
+				mouseX += RoomPane.GRID_SIZE * scale;
+				diffX -= RoomPane.GRID_SIZE * scale;
 			}
-			while (diffX < -RoomPane.GRID_SIZE) {
+			while (diffX < -RoomPane.GRID_SIZE * scale) {
 				setLayoutX(getLayoutX() - RoomPane.GRID_SIZE);
-				mouseX -= RoomPane.GRID_SIZE;
-				diffX += RoomPane.GRID_SIZE;
+				mouseX -= RoomPane.GRID_SIZE * scale;
+				diffX += RoomPane.GRID_SIZE * scale;
 			}
-			while (diffY > RoomPane.GRID_SIZE) {
+			while (diffY > RoomPane.GRID_SIZE * scale) {
 				setLayoutY(getLayoutY() + RoomPane.GRID_SIZE);
-				mouseY += RoomPane.GRID_SIZE;
-				diffY -= RoomPane.GRID_SIZE;
+				mouseY += RoomPane.GRID_SIZE * scale;
+				diffY -= RoomPane.GRID_SIZE * scale;
 			}
-			while (diffY < -RoomPane.GRID_SIZE) {
+			while (diffY < -RoomPane.GRID_SIZE * scale) {
 				setLayoutY(getLayoutY() - RoomPane.GRID_SIZE);
-				mouseY -= RoomPane.GRID_SIZE;
-				diffY += RoomPane.GRID_SIZE;
+				mouseY -= RoomPane.GRID_SIZE * scale;
+				diffY += RoomPane.GRID_SIZE * scale;
 			}
 		});
 

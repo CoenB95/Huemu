@@ -1,9 +1,12 @@
 package com.cbapps.javafx.huemu;
 
 import javafx.application.Platform;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Transform;
+import javafx.scene.transform.Translate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ public class RoomPane extends Pane {
 	private List<HueBulb> bulbs;
 	private boolean gridVisible;
 	private List<Line> lines;
+	private Slider slider;
 
 	public RoomPane(List<LightStorage.HueBulbInfo> infos) {
 		bulbs = new ArrayList<>();
