@@ -2,6 +2,9 @@ package com.cbapps.javafx.huemu;
 
 import com.cbapps.java.huelight.HueLight;
 import com.cbapps.java.huelight.HueLightState;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
@@ -29,7 +32,7 @@ public class HueBulb extends StackPane {
 	private TargetedAccelerator y;
 	private double mouseX;
 	private double mouseY;
-	private Color newColor;
+	private ObjectProperty<Color> newColor;
 
 	private Circle circle;
 	private Text text;
@@ -39,6 +42,7 @@ public class HueBulb extends StackPane {
 		circle.setStrokeWidth(8);
 		circle.setStroke(Color.TRANSPARENT);
 
+		newColor = new SimpleObjectProperty<>(Color.BLACK);
 		text = new Text("-");
 		text.setFont(Font.font("Segoe UI", 30));
 		text.setFill(Color.WHITE);
@@ -55,10 +59,8 @@ public class HueBulb extends StackPane {
 			update(0);
 		});
 
-		circle.hoverProperty().addListener((v1, v2, v3) -> {
-			if (!v3)
-				circle.setStroke(Color.TRANSPARENT);
-		});
+		circle.strokeProperty().bind(Bindings.when(circle.hoverProperty().or(text.hoverProperty()))
+				.then(newColor).otherwise(new Color(1, 1, 1, 0.2)));
 
 		setOnMousePressed(event -> {
 			mouseX = event.getSceneX();
@@ -99,8 +101,7 @@ public class HueBulb extends StackPane {
 			double y = event.getY();
 			double angle = Math.atan2(y - getHeight() / 2, x - getWidth() / 2) / (Math.PI * 2) * 360;
 			double distance = new Point2D(getWidth() / 2, getHeight() / 2).distance(x, y) / circle.getRadius();
-			newColor = Color.hsb(angle, 1, distance < 1.0 ? distance : 1.0);
-			if (circle.isHover() || text.isHover()) circle.setStroke(newColor);
+			newColor.set(Color.hsb(angle, 1, distance < 1.0 ? distance : 1.0));
 		});
 
 		setOnMouseReleased(event -> {
@@ -125,7 +126,7 @@ public class HueBulb extends StackPane {
 								.add("on", !light.getState().isOn())
 								.build());
 					} else if (event.getButton() == MouseButton.PRIMARY) {
-						HueLightState newColorState = HueLightUtil.withColor(light.getState(), newColor);
+						HueLightState newColorState = HueLightUtil.withColor(light.getState(), newColor.get());
 						writer.writeObject(Json.createObjectBuilder()
 								.add("hue", newColorState.getHue())
 								.add("sat", newColorState.getSaturation())
