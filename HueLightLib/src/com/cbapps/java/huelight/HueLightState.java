@@ -2,11 +2,13 @@ package com.cbapps.java.huelight;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * @author CoenB95
  */
 
-public class HueLightState {
+public class HueLightState implements Serializable {
 	private boolean on;
 	@SerializedName("bri")
 	private int brightness;
@@ -102,18 +104,21 @@ public class HueLightState {
 	public HueLightState withBrightness(int value) {
 		HueLightState s = copy();
 		s.brightness = value;
+		s.colorMode = HueLightColorMode.HSB;
 		return s;
 	}
 
 	public HueLightState withHue(int value) {
 		HueLightState s = copy();
 		s.hue = value;
+		s.colorMode = HueLightColorMode.HSB;
 		return s;
 	}
 
 	public HueLightState withSaturation(int value) {
 		HueLightState s = copy();
 		s.saturation = value;
+		s.colorMode = HueLightColorMode.HSB;
 		return s;
 	}
 }
