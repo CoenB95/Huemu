@@ -11,7 +11,7 @@ import java.util.prefs.Preferences;
  * @author Coen Boelhouwers
  */
 public class LightStorage {
-	private static final long VERSION = 3;
+	private static final long VERSION = 1;
 	private List<HueBulbInfo> lights;
 	private long version = VERSION;
 
