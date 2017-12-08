@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -134,6 +135,7 @@ public class HueBulb extends GridPane {
 			if (!event.isStillSincePress())
 				return;
 			HueLightState newColorState = HueLightUtil.withColor(light.getState(), newColor.get());
+			if (event.getButton() == MouseButton.SECONDARY) newColorState = newColorState.toggled();
 			newPut(light.getId(), newColorState);
 		};
 		circle.setOnMouseClicked(onCircleClick);
@@ -153,7 +155,7 @@ public class HueBulb extends GridPane {
 				object.addProperty("hue", newState.getHue());
 				object.addProperty("sat", newState.getSaturation());
 				object.addProperty("bri", newState.getBrightness());
-				System.out.println("Let's send!");
+				System.out.println("Let's send:\n" + object.toString());
 				HttpRequest request = HttpRequest.newBuilder(new URL(
 						"http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
 								lightId + "/state").toURI())
