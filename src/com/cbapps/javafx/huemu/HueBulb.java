@@ -148,43 +148,49 @@ public class HueBulb extends GridPane {
 
 	private static void newPut(String lightId, HueLightState newState) {
 		CompletableFuture.runAsync(() -> {
-			HttpClient client = HttpClient.newHttpClient();
 			try {
-				JsonObject object = new JsonObject();
-				object.addProperty("on", newState.isOn());
-				object.addProperty("hue", newState.getHue());
-				object.addProperty("sat", newState.getSaturation());
-				object.addProperty("bri", newState.getBrightness());
-				System.out.println("Let's send:\n" + object.toString());
-				HttpRequest request = HttpRequest.newBuilder(new URL(
-						"http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
-								lightId + "/state").toURI())
-						.PUT(HttpRequest.BodyProcessor.fromString(object.toString()))
-						.build();
-				CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpResponse.BodyHandler.asString());
-				future.thenAccept(stringHttpResponse -> {
-					System.out.println("response: " + stringHttpResponse.body());
-					JsonArray array = new Gson().fromJson(stringHttpResponse.body(), JsonArray.class);
-					for (JsonElement anArray : array) {
-						JsonObject o = anArray.getAsJsonObject();
-						JsonObject ack;
-						if ((ack = o.getAsJsonObject("success")) != null) {
-							System.out.println("Success!");
-							String base = "/lights/" + lightId + "/state/";
-							HueLightState respondedState = newState;
-							if (ack.has(base + "on"))
-								respondedState.toggled(ack.get(base + "on").getAsBoolean());
-							else if (ack.has(base + "bri"))
-								respondedState.withHue(ack.get(base + "bri").getAsInt());
-							else if (ack.has(base + "hue"))
-								respondedState.withHue(ack.get(base + "hue").getAsInt());
-							else if (ack.has(base + "sat"))
-								respondedState.withHue(ack.get(base + "sat").getAsInt());
-							//light.setState(state);
+				System.out.println("Startup client...");
+				HttpClient client = HttpClient.newHttpClient();
+				System.out.println("Client = " + client);
+				try {
+					JsonObject object = new JsonObject();
+					object.addProperty("on", newState.isOn());
+					object.addProperty("hue", newState.getHue());
+					object.addProperty("sat", newState.getSaturation());
+					object.addProperty("bri", newState.getBrightness());
+					System.out.println("Let's send:\n" + object.toString());
+					HttpRequest request = HttpRequest.newBuilder(new URL(
+							"http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
+									lightId + "/state").toURI())
+							.PUT(HttpRequest.BodyProcessor.fromString(object.toString()))
+							.build();
+					CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpResponse.BodyHandler.asString());
+					future.thenAccept(stringHttpResponse -> {
+						System.out.println("response: " + stringHttpResponse.body());
+						JsonArray array = new Gson().fromJson(stringHttpResponse.body(), JsonArray.class);
+						for (JsonElement anArray : array) {
+							JsonObject o = anArray.getAsJsonObject();
+							JsonObject ack;
+							if ((ack = o.getAsJsonObject("success")) != null) {
+								System.out.println("Success!");
+								String base = "/lights/" + lightId + "/state/";
+								HueLightState respondedState = newState;
+								if (ack.has(base + "on"))
+									respondedState.toggled(ack.get(base + "on").getAsBoolean());
+								else if (ack.has(base + "bri"))
+									respondedState.withHue(ack.get(base + "bri").getAsInt());
+								else if (ack.has(base + "hue"))
+									respondedState.withHue(ack.get(base + "hue").getAsInt());
+								else if (ack.has(base + "sat"))
+									respondedState.withHue(ack.get(base + "sat").getAsInt());
+								//light.setState(state);
+							}
 						}
-					}
-				});
-			} catch (URISyntaxException | MalformedURLException e) {
+					});
+				} catch (URISyntaxException | MalformedURLException e) {
+					e.printStackTrace();
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});

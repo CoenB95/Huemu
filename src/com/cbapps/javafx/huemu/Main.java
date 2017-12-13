@@ -106,14 +106,6 @@ public class Main extends Application {
 			try {
 				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights");
 				while (!stopped) {
-//					try (JsonReader reader = Json.createReader(url.openStream())) {
-//						List<HueLight> lights = new ArrayList<>();
-//						Gson gson = new Gson();
-//						reader.readObject().forEach((k, v) -> {
-//							HueLight hueLight = gson.fromJson(v.toString(), HueLight.class);
-//							hueLight.setId(k);
-//							lights.add(hueLight);
-//						});
 					try (InputStreamReader reader = new InputStreamReader(url.openStream())) {
 						List<HueLight> lights = new ArrayList<>();
 						Gson gson = new Gson();
@@ -130,9 +122,6 @@ public class Main extends Application {
 						Platform.runLater(() -> {
 							for (int i = 0; i < lights.size() && i < bulbGrid.getBulbs().size(); i++) {
 								HueLight bulbLight = bulbGrid.getBulbs().get(i).light;
-								//if (bulbLight == null || bulbLight.getState().getHue() !=
-								//		lights.get(i).getState().getHue()) {
-								//System.out.println("Bulb " + i + " needs update.");
 								bulbGrid.getBulbs().get(i).light = lights.get(i);
 								//}
 							}
