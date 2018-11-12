@@ -1,13 +1,8 @@
 package com.cbapps.javafx.huemu;
 
-import com.cbapps.java.huelight.HueLight;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.sun.net.httpserver.HttpServer;
+import com.cbapps.javafx.huemu.connection.HueConnection;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -18,24 +13,20 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Coen Boelhouwers
  */
 public class Main extends Application {
 
-	private boolean stopped;
+	private ScheduledExecutorService executorService;
+	private ScheduledFuture scheduledUpdates;
+
 	private RoomPane bulbGrid;
-	private HttpServer server;
 	private LightStorage storage;
 	private int updateFrequencyMillis = 2000;
 
@@ -47,6 +38,8 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.getIcons().add(new Image("/Huemu logo.png"));
 		primaryStage.setTitle("Huemu");
+
+		executorService = Executors.newSingleThreadScheduledExecutor();
 
 		storage = new LightStorage();
 		storage.restoreLights();
@@ -76,6 +69,7 @@ public class Main extends Application {
 				System.err.println("Not a valid value.");
 			}
 			updateFrequencyMillis = value;
+			scheduleUpdates();
 		});
 
 		VBox settingsBox = new VBox(
@@ -102,82 +96,31 @@ public class Main extends Application {
 			}
 		}.start();
 
-		CompletableFuture.runAsync(() -> {
-			try {
-				URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights");
-				while (!stopped) {
-					try (InputStreamReader reader = new InputStreamReader(url.openStream())) {
-						List<HueLight> lights = new ArrayList<>();
-						Gson gson = new Gson();
-						JsonObject object = new JsonParser().parse(reader).getAsJsonObject();
-						object.entrySet().forEach(entry -> {
-							HueLight hueLight = gson.fromJson(entry.getValue().toString(), HueLight.class);
-							hueLight.setId(entry.getKey());
-							lights.add(hueLight);
-						});
-
-						//if (server == null)
-						//startServer(lights);
-
-						Platform.runLater(() -> {
-							for (int i = 0; i < lights.size() && i < bulbGrid.getBulbs().size(); i++) {
-								HueLight bulbLight = bulbGrid.getBulbs().get(i).light;
-								bulbGrid.getBulbs().get(i).light = lights.get(i);
-								//}
-							}
-						});
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					Thread.sleep(updateFrequencyMillis);
-				}
-			} catch (MalformedURLException | InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
+		scheduleUpdates();
 	}
 
-	private void startClient() {
-		try {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder(new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/1/state").toURI())
-					.build();
+	private void scheduleUpdates() {
+		if (scheduledUpdates != null)
+			scheduledUpdates.cancel(false);
 
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+		HueConnection connection = new HueConnection();
+		scheduledUpdates = executorService.scheduleAtFixedRate(() -> {
+			bulbGrid.getBulbs().forEach(bulb -> {
+				connection.fetchState(bulb.light).thenAccept(state -> bulb.light.setState(state));
+			});
+		}, 0, updateFrequencyMillis, TimeUnit.MILLISECONDS);
 	}
-
-//	private void startServer(List<HueLight> lights) {
-//		try {
-//			server = HttpServer.create(new InetSocketAddress("localhost",7300), 0);
-//			HueHttpHandler handler = new HueHttpHandler();
-//			for (HueLight light : lights) {
-//				server.createContext("/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights",
-//						exchange -> handler.handleLights(lights, exchange));
-//				String address = "/lights/" + light.getId() + "/state";
-//				server.createContext("/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9" + address,
-//						exchange -> handler.handleState(address, light, exchange));
-//			}
-//			server.start();
-//			System.out.println("Server at " + server.getAddress());
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	@Override
 	public void stop() throws Exception {
 		super.stop();
-		stopped = true;
 		storage.getLights().clear();
 		bulbGrid.getBulbs().forEach(b -> storage.getLights().add(
 				new LightStorage.HueBulbInfo(b.light, b.getLayoutX(), b.getLayoutY())
 		));
 		storage.storeLights();
-		if (server != null)
-			server.stop(0);
+
+		if (scheduledUpdates != null)
+			scheduledUpdates.cancel(true);
 	}
 }

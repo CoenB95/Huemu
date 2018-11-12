@@ -15,6 +15,7 @@ public class HueLightState implements Serializable {
 	private int hue;
 	@SerializedName("sat")
 	private int saturation;
+	@SerializedName("effect")
 	private HueLightEffect effect = HueLightEffect.COLOR_LOOP;
 	private double[] xy;
 	@SerializedName("ct")
@@ -105,6 +106,12 @@ public class HueLightState implements Serializable {
 		HueLightState s = copy();
 		s.brightness = value;
 		s.colorMode = HueLightColorMode.HSB;
+		return s;
+	}
+
+	public HueLightState withEffect(HueLightEffect value) {
+		HueLightState s = copy();
+		s.effect = value;
 		return s;
 	}
 

@@ -2,10 +2,7 @@ package com.cbapps.javafx.huemu;
 
 import com.cbapps.java.huelight.HueLight;
 import com.cbapps.java.huelight.HueLightState;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.cbapps.javafx.huemu.connection.HueConnection;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -24,14 +21,6 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Coen Boelhouwers
@@ -60,7 +49,10 @@ public class HueBulb extends GridPane {
 		saturationSlider.setPrefHeight(30);
 		saturationSlider.setOrientation(Orientation.VERTICAL);
 		saturationSlider.valueProperty().addListener((v1, v2, v3) -> {
-			newPut(light.getId(), light.getState().withSaturation(v3.intValue()));
+			new HueConnection().pushState(light.getId(), light.getState().withSaturation(v3.intValue()))
+					.thenAccept(state -> {
+				light.setState(state);
+			});
 		});
 
 		newColor = new SimpleObjectProperty<>(Color.BLACK);
@@ -134,120 +126,22 @@ public class HueBulb extends GridPane {
 		EventHandler<MouseEvent> onCircleClick = event -> {
 			if (!event.isStillSincePress())
 				return;
-			HueLightState newColorState = HueLightUtil.withColor(light.getState(), newColor.get());
+
+			HueLightState parsedColor = HueLightUtil.withColor(light.getState(), newColor.get());
+			HueLightState newColorState = light.getState().withHue(parsedColor.getHue()).withBrightness(parsedColor.getBrightness());
 			if (event.getButton() == MouseButton.SECONDARY) newColorState = newColorState.toggled();
-			newPut(light.getId(), newColorState);
+			new HueConnection().pushState(light.getId(), newColorState).thenAccept(state -> {
+				light.setState(state);
+			});
 		};
 		circle.setOnMouseClicked(onCircleClick);
 		text.setOnMouseClicked(onCircleClick);
 
 		add(new StackPane(circle, text), 0, 0);
 		add(saturationSlider, 1, 0);
-		//getChildren().addAll(circle, text, saturationSlider);
 	}
 
-	private static void newPut(String lightId, HueLightState newState) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				System.out.println("Startup client...");
-				HttpClient client = HttpClient.newHttpClient();
-				System.out.println("Client = " + client);
-				try {
-					JsonObject object = new JsonObject();
-					object.addProperty("on", newState.isOn());
-					object.addProperty("hue", newState.getHue());
-					object.addProperty("sat", newState.getSaturation());
-					object.addProperty("bri", newState.getBrightness());
-					System.out.println("Let's send:\n" + object.toString());
-					HttpRequest request = HttpRequest.newBuilder(new URL(
-							"http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
-									lightId + "/state").toURI())
-							.PUT(HttpRequest.BodyPublishers.ofString(object.toString()))
-							.build();
-					CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-					future.thenAccept(stringHttpResponse -> {
-						System.out.println("response: " + stringHttpResponse.body());
-						JsonArray array = new Gson().fromJson(stringHttpResponse.body(), JsonArray.class);
-						for (JsonElement anArray : array) {
-							JsonObject o = anArray.getAsJsonObject();
-							JsonObject ack;
-							if ((ack = o.getAsJsonObject("success")) != null) {
-								System.out.println("Success!");
-								String base = "/lights/" + lightId + "/state/";
-								HueLightState respondedState = newState;
-								if (ack.has(base + "on"))
-									respondedState.toggled(ack.get(base + "on").getAsBoolean());
-								else if (ack.has(base + "bri"))
-									respondedState.withHue(ack.get(base + "bri").getAsInt());
-								else if (ack.has(base + "hue"))
-									respondedState.withHue(ack.get(base + "hue").getAsInt());
-								else if (ack.has(base + "sat"))
-									respondedState.withHue(ack.get(base + "sat").getAsInt());
-								//light.setState(state);
-							}
-						}
-					});
-				} catch (URISyntaxException | MalformedURLException e) {
-					e.printStackTrace();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-	}
 
-	private void oldPut(MouseEvent event) {
-//		if (!event.isStillSincePress())
-//			return;
-//
-//		try {
-//			URL url = new URL("http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
-//					light.getId() + "/state");
-//			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-//			con.setRequestMethod("PUT");
-//			con.setDoOutput(true);
-//			try (OutputStream out = con.getOutputStream()) {
-//				JsonWriter writer = Json.createWriter(out);
-//				if (event.getButton() == MouseButton.SECONDARY) {
-//					writer.writeObject(Json.createObjectBuilder()
-//							.add("on", !light.getState().isOn())
-//							.build());
-//				} else if (event.getButton() == MouseButton.PRIMARY) {
-//					HueLightState newColorState = HueLightUtil.withColor(light.getState(), newColor.get());
-//					writer.writeObject(Json.createObjectBuilder()
-//							.add("hue", newColorState.getHue())
-//							.add("sat", newColorState.getSaturation())
-//							.add("bri", newColorState.getBrightness())
-//							.build());
-//				}
-//				System.out.println("Send!");
-//			}
-//			try (InputStream input = con.getInputStream()) {
-//				JsonReader reader = Json.createReader(input);
-//				JsonArray array = reader.readArray();
-//				for (JsonObject o : array.getValuesAs(JsonObject.class)) {
-//					JsonObject ack;
-//					if ((ack = o.getJsonObject("success")) != null) {
-//						System.out.println("Success!");
-//						String base = "/lights/" + light.getId() + "/state/";
-//						HueLightState state = light.getState();
-//						if (ack.containsKey(base + "on"))
-//							state.toggled(ack.getBoolean(base + "on"));
-//						else if (ack.containsKey(base + "bri"))
-//							state.withHue(ack.getJsonNumber(base + "bri").intValue());
-//						else if (ack.containsKey(base + "hue"))
-//							state.withHue(ack.getJsonNumber(base + "hue").intValue());
-//						else if (ack.containsKey(base + "sat"))
-//							state.withHue(ack.getJsonNumber(base + "sat").intValue());
-//						light.setState(state);
-//					}
-//				}
-//				System.out.println("response: " + array);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-	}
 
 	public double getTargetX() {
 		return x.getTarget();
@@ -280,6 +174,7 @@ public class HueBulb extends GridPane {
 				case NONE:
 				default:
 					circle.setFill(HueLightUtil.getColor(light));
+					break;
 			}
 			text.setText(light.getId());
 		}
