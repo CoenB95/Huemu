@@ -2,10 +2,10 @@ module Huemu {
 	requires javafx.base;
 	requires javafx.graphics;
 	requires javafx.controls;
-	requires jdk.incubator.httpclient;
 	requires gson;
 	requires jdk.httpserver;
 	requires HueLightLib;
+	requires java.net.http;
 	requires java.prefs;
 	requires java.sql;
 

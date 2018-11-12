@@ -14,5 +14,6 @@
     <orderEntry type="library" name="org.eclipse:yasson:1.0" level="project" />
     <orderEntry type="library" name="com.google.code.gson:gson:2.8.2" level="project" />
     <orderEntry type="module" module-name="HueLightLib" />
+    <orderEntry type="library" name="javafx.base" level="project" />
   </component>
 </module>

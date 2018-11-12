@@ -24,13 +24,13 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import jdk.incubator.http.HttpClient;
-import jdk.incubator.http.HttpRequest;
-import jdk.incubator.http.HttpResponse;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -162,9 +162,9 @@ public class HueBulb extends GridPane {
 					HttpRequest request = HttpRequest.newBuilder(new URL(
 							"http://145.48.205.33/api/ewZRvcXwh9rAw20Ee1oWxeqiY-VqkAJuUiHUuet9/lights/" +
 									lightId + "/state").toURI())
-							.PUT(HttpRequest.BodyProcessor.fromString(object.toString()))
+							.PUT(HttpRequest.BodyPublishers.ofString(object.toString()))
 							.build();
-					CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpResponse.BodyHandler.asString());
+					CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
 					future.thenAccept(stringHttpResponse -> {
 						System.out.println("response: " + stringHttpResponse.body());
 						JsonArray array = new Gson().fromJson(stringHttpResponse.body(), JsonArray.class);
