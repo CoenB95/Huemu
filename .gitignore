@@ -1,5 +1,9 @@
 /out
+/.idea/compiler.xml
+/.idea/libraries
 /.idea/vcs.xml
 /.idea/misc.xml
 /.idea/workspace.xml
-\.idea/inspectionProfiles/Project_Default\.xml
+/.idea/inspectionProfiles/Project_Default\.xml
+/target
+/HueLightLib/target

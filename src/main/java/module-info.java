@@ -1,10 +1,10 @@
-module Huemu {
-	requires javafx.base;
-	requires javafx.graphics;
-	requires javafx.controls;
-	requires gson;
-	requires jdk.httpserver;
+module huemu {
 	requires HueLightLib;
+
+	requires javafx.controls;
+
+	requires gson;
+
 	requires java.net.http;
 	requires java.prefs;
 	requires java.sql;

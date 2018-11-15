@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Coen Boelhouwers
  */
-public class Main extends Application {
+public class HuemuApp extends Application {
 
 	private ScheduledExecutorService executorService;
 	private ScheduledFuture scheduledUpdates;
@@ -29,10 +29,6 @@ public class Main extends Application {
 	private RoomPane bulbGrid;
 	private LightStorage storage;
 	private int updateFrequencyMillis = 2000;
-
-	public static void main(String[] args) {
-		Application.launch();
-	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
