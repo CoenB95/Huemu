@@ -1,5 +1,5 @@
-module huemu {
-	requires HueLightLib;
+module huemu.gui {
+	requires huemu.lights;
 
 	requires javafx.controls;
 

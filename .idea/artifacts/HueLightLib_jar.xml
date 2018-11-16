@@ -2,7 +2,7 @@
   <artifact type="jar" name="HueLightLib:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/HueLightLib_jar</output-path>
     <root id="archive" name="HueLightLib.jar">
-      <element id="module-output" name="HueLightLib" />
+      <element id="module-output" name="HuemuLights" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.2/gson-2.8.2.jar" path-in-jar="/" />
     </root>
   </artifact>

@@ -1,4 +1,4 @@
-module HueLightLib {
+module huemu.lights {
 	requires gson;
 	opens com.cbapps.java.huelight to gson;
 

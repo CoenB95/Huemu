@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HueLightLib/HueLightLib.iml" filepath="$PROJECT_DIR$/HueLightLib/HueLightLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/Huemu.iml" filepath="$PROJECT_DIR$/Huemu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HuemuGUI/HuemuGUI.iml" filepath="$PROJECT_DIR$/HuemuGUI/HuemuGUI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HuemuJlink/HuemuJlink.iml" filepath="$PROJECT_DIR$/HuemuJlink/HuemuJlink.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HuemuLights/HuemuLights.iml" filepath="$PROJECT_DIR$/HuemuLights/HuemuLights.iml" />
     </modules>
   </component>
 </project>
