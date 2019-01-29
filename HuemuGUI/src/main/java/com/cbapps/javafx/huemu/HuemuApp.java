@@ -32,7 +32,7 @@ public class HuemuApp extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.getIcons().add(new Image("/Huemu logo.png"));
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/Huemu logo.png")));
 		primaryStage.setTitle("Huemu");
 
 		executorService = Executors.newSingleThreadScheduledExecutor();

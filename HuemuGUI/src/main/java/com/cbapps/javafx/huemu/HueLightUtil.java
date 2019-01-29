@@ -19,12 +19,12 @@ public class HueLightUtil {
 		if (state.getColorMode() == null)
 			return Color.BLACK;
 		switch (state.getColorMode()) {
-			case XY:
-			case HSB:
+			case xy:
+			case hs:
 				return Color.hsb((double)state.getHue() / 65_535f * 360f,
 						(double)state.getSaturation() / 255,
 						(double)state.getBrightness() / 255);
-			case NONE:
+			case none:
 			default:
 				return Color.BLACK;
 		}

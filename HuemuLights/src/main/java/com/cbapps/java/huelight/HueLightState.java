@@ -1,7 +1,8 @@
 package com.cbapps.java.huelight;
 
-import com.google.gson.annotations.SerializedName;
-
+import javax.json.bind.Jsonb;
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
 import java.io.Serializable;
 
 /**
@@ -9,20 +10,24 @@ import java.io.Serializable;
  */
 
 public class HueLightState implements Serializable {
+	@JsonbProperty
 	private boolean on;
-	@SerializedName("bri")
+	@JsonbProperty("bri")
 	private int brightness;
+	@JsonbProperty
 	private int hue;
-	@SerializedName("sat")
+	@JsonbProperty("sat")
 	private int saturation;
-	@SerializedName("effect")
-	private HueLightEffect effect = HueLightEffect.COLOR_LOOP;
+	@JsonbProperty("effect")
+	private HueLightEffect effect = HueLightEffect.colorloop;
+	@JsonbProperty
 	private double[] xy;
-	@SerializedName("ct")
+	@JsonbProperty("ct")
 	private int colorTemperature;
-	private HueLightAlert alert = HueLightAlert.NONE;
-	@SerializedName("colormode")
-	private HueLightColorMode colorMode = HueLightColorMode.NONE;
+	@JsonbProperty
+	private HueLightAlert alert = HueLightAlert.none;
+	@JsonbProperty("colormode")
+	private HueLightColorMode colorMode = HueLightColorMode.none;
 
 	protected HueLightState() {
 
@@ -105,7 +110,7 @@ public class HueLightState implements Serializable {
 	public HueLightState withBrightness(int value) {
 		HueLightState s = copy();
 		s.brightness = value;
-		s.colorMode = HueLightColorMode.HSB;
+		s.colorMode = HueLightColorMode.hs;
 		return s;
 	}
 
@@ -118,14 +123,14 @@ public class HueLightState implements Serializable {
 	public HueLightState withHue(int value) {
 		HueLightState s = copy();
 		s.hue = value;
-		s.colorMode = HueLightColorMode.HSB;
+		s.colorMode = HueLightColorMode.hs;
 		return s;
 	}
 
 	public HueLightState withSaturation(int value) {
 		HueLightState s = copy();
 		s.saturation = value;
-		s.colorMode = HueLightColorMode.HSB;
+		s.colorMode = HueLightColorMode.hs;
 		return s;
 	}
 }

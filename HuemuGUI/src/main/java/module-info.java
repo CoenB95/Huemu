@@ -3,13 +3,12 @@ module huemu.gui {
 
 	requires javafx.controls;
 
-	requires gson;
+	requires java.json;
+	requires java.json.bind;
 
 	requires java.net.http;
 	requires java.prefs;
 	requires java.sql;
-
-	opens com.cbapps.javafx.huemu to gson;
 
 	exports com.cbapps.javafx.huemu;
 }

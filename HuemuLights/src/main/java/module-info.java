@@ -1,6 +1,5 @@
 module huemu.lights {
-	requires gson;
-	opens com.cbapps.java.huelight to gson;
+	requires java.json.bind;
 
 	exports com.cbapps.java.huelight;
 }

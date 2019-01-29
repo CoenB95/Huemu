@@ -1,16 +1,12 @@
 package com.cbapps.java.huelight;
 
-import com.google.gson.annotations.SerializedName;
+import javax.json.bind.annotation.JsonbProperty;
 
 /**
  * @author Coen Boelhouwers
  */
 public enum HueLightColorMode {
-	NONE,
-
-	@SerializedName("hs")
-	HSB,
-
-	@SerializedName("xy")
-	XY
+	none,
+	hs,
+	xy
 }

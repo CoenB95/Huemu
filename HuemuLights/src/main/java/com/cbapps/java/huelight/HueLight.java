@@ -16,6 +16,11 @@ public class HueLight {
 		this.state = state;
 	}
 
+	public HueLight(String id, HueLightState state) {
+		this.id = id;
+		this.state = state;
+	}
+
 	public String getId() {
 		return id;
 	}

@@ -158,7 +158,7 @@ public class HueBulb extends GridPane {
 		setTranslateY(y.getValue());
 		if (light != null) {
 			switch (light.getState().getEffect()) {
-				case COLOR_LOOP:
+				case colorloop:
 					circle.setFill(new LinearGradient(0.2, 0.8,
 							0.8, 0.2, true, CycleMethod.NO_CYCLE,
 							new Stop(0, Color.web("#f8bd55")),
@@ -171,7 +171,7 @@ public class HueBulb extends GridPane {
 							new Stop(1, Color.web("#f2660f"))
 					));
 					break;
-				case NONE:
+				case none:
 				default:
 					circle.setFill(HueLightUtil.getColor(light));
 					break;

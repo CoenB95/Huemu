@@ -6,7 +6,6 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>HuemuGUI</module>
-        <module>HuemuJlink</module>
         <module>HuemuLights</module>
     </modules>
 
@@ -25,20 +24,7 @@
                     <release>11</release>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-jlink-plugin</artifactId>
-                <version>3.0.0-alpha-1</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <!-- configuration elements goes here -->
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
-    <properties>
-        <java.version>11</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-    </properties>
 </project>
